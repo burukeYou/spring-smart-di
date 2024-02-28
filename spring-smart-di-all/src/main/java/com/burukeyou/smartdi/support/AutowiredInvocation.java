@@ -12,4 +12,5 @@ public class AutowiredInvocation {
     private Class<?> injectedType;
     private Member injectedMember;
     private AnnotationMeta annotationMeta;
+
 }

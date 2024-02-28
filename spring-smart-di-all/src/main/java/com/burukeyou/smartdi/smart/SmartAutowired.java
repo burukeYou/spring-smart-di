@@ -1,6 +1,8 @@
 package com.burukeyou.smartdi.smart;
 
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.*;
 
 /**
@@ -8,17 +10,21 @@ import java.lang.annotation.*;
  *
  */
 @Inherited
-@Target({ElementType.FIELD,ElementType.METHOD,ElementType.TYPE})
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-//@CustomAutowired(factory = SmartAutowiredFactory.class,value = SmartAutowired.class)
 public @interface SmartAutowired {
 
+    /**
+     * if config,use the environment key value to get  inject bean
+     */
+    @AliasFor("value")
+    String key() default "";
 
-    Class<?> defaultType() default Void.class;
+    @AliasFor("key")
+    String value() default "";
 
     /**
-     *
+     * Declares whether the annotated dependency is required.
      */
-    String propValue() default "";
-
+    boolean required() default true;
 }

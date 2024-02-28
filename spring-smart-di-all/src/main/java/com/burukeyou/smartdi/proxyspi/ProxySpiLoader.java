@@ -1,6 +1,7 @@
 package com.burukeyou.smartdi.proxyspi;
 
 import com.burukeyou.smartdi.config.SpringBeanContext;
+import com.burukeyou.smartdi.exceptions.SPIBeanTypeMismatchException;
 import com.burukeyou.smartdi.proxyspi.annotation.ProxySPI;
 import com.burukeyou.smartdi.proxyspi.factory.AnnotationProxyFactory;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -23,7 +24,16 @@ public class ProxySpiLoader {
 
         Class<? extends AnnotationProxyFactory<?>> proxyFactory = proxySPI.value();
         AnnotationProxyFactory<Annotation> springBean = (AnnotationProxyFactory<Annotation>) SpringBeanContext.getBean(proxyFactory);
-        return (T)springBean.getProxy(clz,obj);
+        Object proxy = springBean.getProxy(clz, obj);
+        if (proxy == null){
+            return null;
+        }
+
+        if (!clz.isAssignableFrom(proxy.getClass())){
+            throw new SPIBeanTypeMismatchException(springBean.getClass().getSimpleName() + " get the bean type  is "+proxy.getClass().getSimpleName()+", need inject class type " + clz.getSimpleName());
+        }
+
+        return (T)proxy;
     }
 
 

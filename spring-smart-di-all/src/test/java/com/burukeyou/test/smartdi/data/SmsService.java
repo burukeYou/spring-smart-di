@@ -1,9 +1,9 @@
 package com.burukeyou.test.smartdi.data;
 
-import com.burukeyou.smartdi.proxyspi.annotation.EnvironmentProxySPI;
+import com.burukeyou.smartdi.proxyspi.annotation.ProxySPI;
 
-//@ProxySPI(SmsServiceProxyFactory.class)
-@EnvironmentProxySPI("${system.sms}")
+
+@ProxySPI(SmsServiceProxyFactory.class)
 public interface SmsService {
 
     void send(String message);

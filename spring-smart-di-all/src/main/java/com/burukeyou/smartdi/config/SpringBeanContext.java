@@ -1,7 +1,7 @@
 package com.burukeyou.smartdi.config;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
@@ -26,7 +26,7 @@ public abstract class SpringBeanContext implements ApplicationContextAware {
     public static <T> T getBean(String name){
         try {
             return (T) springContext.getBean(name);
-        } catch (BeansException e) {
+        } catch (NoSuchBeanDefinitionException e) {
             return null;
         }
     }
@@ -34,7 +34,7 @@ public abstract class SpringBeanContext implements ApplicationContextAware {
     public static <T> T getBeanByAliasName(String name){
         try {
             return (T) springContext.getBean(name);
-        } catch (BeansException e) {
+        } catch (NoSuchBeanDefinitionException e) {
             String originBeanName = BEAN_SPI_NAME.get(name);
             if (StringUtils.isEmpty(originBeanName)){
                 throw new RuntimeException("can not find bean for alias name ["+name+"] , because it not exist");
@@ -47,7 +47,7 @@ public abstract class SpringBeanContext implements ApplicationContextAware {
     public static <T> T getBean(Class<T> clz) {
         try {
             return springContext.getBean(clz);
-        } catch (NoUniqueBeanDefinitionException e) {
+        } catch (NoSuchBeanDefinitionException e) {
           return null;
         }
     }

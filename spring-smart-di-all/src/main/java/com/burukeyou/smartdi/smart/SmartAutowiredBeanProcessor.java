@@ -1,31 +1,38 @@
 package com.burukeyou.smartdi.smart;
 
-import com.burukeyou.smartdi.proxyspi.register.BaseSpringAware;
-import com.burukeyou.smartdi.register.AutowiredBeanFactory;
+import com.burukeyou.smartdi.exceptions.AutowiredInjectBeanException;
+import com.burukeyou.smartdi.register.BaseAutowiredBeanProcessor;
 import com.burukeyou.smartdi.support.AutowiredInvocation;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-//@Component
-public class SmartAutowiredFactory extends BaseSpringAware implements AutowiredBeanFactory<SmartAutowired> {
-    
+@Component
+public class SmartAutowiredBeanProcessor extends BaseAutowiredBeanProcessor {
+
     @Override
-    public void registerBeanDefinition(AutowiredInvocation invocation) {
-        
+    public List<Class<? extends Annotation>> filterAnnotation() {
+        return Collections.singletonList(SmartAutowired.class);
     }
 
     @Override
-    public Object getCustomBean(AutowiredInvocation invocation,SmartAutowired smartAutowired) throws Exception {
+    public Object getInjectedBean(AutowiredInvocation invocation) {
+        SmartAutowired smartAutowired = invocation.getAnnotationMeta().getAnnotationObj();
         Object bean = null;
-        if (!StringUtils.isEmpty(smartAutowired.propValue())){
-            bean = getFromProp(smartAutowired.propValue());
-        }else if (smartAutowired.defaultType() != Void.class && smartAutowired.defaultType() !=null) {
-            bean = getBean(smartAutowired.defaultType());
-        }else {
-            bean = autowireGetBean(invocation.getInjectedType(),smartAutowired);
+        if (!StringUtils.isEmpty(smartAutowired.key())){
+            bean =  getFromProp(smartAutowired.value());
+        }else{
+            bean =   autowireGetBean(invocation.getInjectedType(),smartAutowired);
+        }
+
+        if (bean == null && smartAutowired.required()){
+            throw new AutowiredInjectBeanException("can not find bean for " + invocation.getInjectedType());
         }
         return bean;
     }
@@ -48,19 +55,8 @@ public class SmartAutowiredFactory extends BaseSpringAware implements AutowiredB
     private Object autowireGetBean(Class<?> injectedType, SmartAutowired smartAutowired) {
         Object beanValue;
         if (injectedType.isInterface() || Modifier.isAbstract(injectedType.getModifiers())){
-            // 如果是接口按 传统autowired注入. 但是可能会有多个实现类. 一般只有一个实现类就不用指定 type了
-            try {
-                beanValue = getBean(injectedType);
-            } catch (NoUniqueBeanDefinitionException e) {
-                Class<?> type = smartAutowired.defaultType();
-                if (type != Void.class && type != null){
-                    beanValue = getSameBean(type);
-                }else{
-                    throw e;
-                }
-            }
+            beanValue = getBean(injectedType);
         }else{
-            // 如果是具体类则具体注入
             beanValue = getSameBean(injectedType);
         }
         return beanValue;
@@ -69,15 +65,18 @@ public class SmartAutowiredFactory extends BaseSpringAware implements AutowiredB
     private Object getSameBean(Class<?> fieldType) {
         Map<String, ?> beansOfType = springContext.getBeansOfType(fieldType);
         if (beansOfType.size() <= 0){
-            throw new RuntimeException("没有找到实现类: " + fieldType.getName());
+           return null;
         }
 
+        // 尝试使用具体类
         for (Object value : beansOfType.values()) {
             if (isSameClass(value.getClass(), fieldType)) {
                 return value;
             }
         }
-        throw new RuntimeException("有多个实现类请指定: " + fieldType.getName());
+
+        String msg = beansOfType.values().stream().map(e -> e.getClass().getSimpleName()).collect(Collectors.joining(","));
+        throw new AutowiredInjectBeanException(fieldType.getName() + "有多个实现类 " + msg);
     }
 
     public boolean isSameClass(Class<?> class1, Class<?> class2) {
@@ -89,4 +88,5 @@ public class SmartAutowiredFactory extends BaseSpringAware implements AutowiredB
         }
         return false;
     }
+
 }

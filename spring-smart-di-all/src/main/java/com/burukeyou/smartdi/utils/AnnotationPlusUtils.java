@@ -25,7 +25,7 @@ import static org.springframework.util.ReflectionUtils.findMethod;
 import static org.springframework.util.ReflectionUtils.invokeMethod;
 import static org.springframework.util.StringUtils.trimWhitespace;
 
-public abstract class AnnotationUtils {
+public abstract class AnnotationPlusUtils {
 
     /**
      * The class name of AnnotatedElementUtils that is introduced since Spring Framework 4

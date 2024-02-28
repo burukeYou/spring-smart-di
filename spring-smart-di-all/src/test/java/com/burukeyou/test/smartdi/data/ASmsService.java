@@ -3,9 +3,9 @@ package com.burukeyou.test.smartdi.data;
 import com.burukeyou.smartdi.annotations.BeanAliasName;
 import org.springframework.stereotype.Component;
 
-@BeanAliasName("a10")
+@BeanAliasName("aSMS_service")
 @Component
-public class ASmsService implements SmsService {
+public class ASmsService implements SmsService,DBSmsService,EnvironmentSmsService {
 
     @Override
     public void send(String message) {

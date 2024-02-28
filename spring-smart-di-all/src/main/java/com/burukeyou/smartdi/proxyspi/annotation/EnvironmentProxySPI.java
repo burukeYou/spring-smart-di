@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 public @interface EnvironmentProxySPI {
 
     /**
-     * spring environment 属性
+     * spring environment attribute
      */
     String value();
 

@@ -1,4 +1,4 @@
-package com.burukeyou.smartdi.proxyspi.register;
+package com.burukeyou.smartdi.register;
 
 import com.burukeyou.smartdi.config.SpringBeanContext;
 import com.burukeyou.smartdi.annotations.BeanAliasName;

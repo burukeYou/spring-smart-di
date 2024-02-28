@@ -1,19 +1,13 @@
 package com.burukeyou.smartdi.proxyspi.annotation;
 
 
-
-
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.*;
 
 @Inherited
-@Target({ElementType.FIELD,ElementType.METHOD})
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@AutowiredSPI(proxy = true)
 public @interface AutowiredProxySPI {
 
-    @AliasFor(annotation = AutowiredSPI.class)
-    boolean required() default false;
+   // boolean required() default false;
 
 }

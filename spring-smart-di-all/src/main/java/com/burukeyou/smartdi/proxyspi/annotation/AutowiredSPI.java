@@ -9,12 +9,10 @@ import java.lang.annotation.*;
  * @author caizhihao
  */
 @Inherited
-@Target({ElementType.FIELD,ElementType.METHOD,ElementType.TYPE,ElementType.CONSTRUCTOR})
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AutowiredSPI {
 
-
     boolean required() default false;
 
-    boolean proxy() default false;
 }

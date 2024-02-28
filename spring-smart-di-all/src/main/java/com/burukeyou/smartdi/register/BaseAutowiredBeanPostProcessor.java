@@ -1,13 +1,14 @@
 package com.burukeyou.smartdi.register;
 
-import com.burukeyou.smartdi.proxyspi.register.BaseSpringAware;
 import com.burukeyou.smartdi.support.AnnotationMeta;
 import com.burukeyou.smartdi.support.AutowiredInvocation;
-import com.burukeyou.smartdi.utils.AnnotationUtils;
+import com.burukeyou.smartdi.utils.AnnotationPlusUtils;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.config.InstantiationAwareBeanPostProces
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -24,9 +24,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -34,31 +33,28 @@ import java.util.concurrent.ConcurrentMap;
  * @author caizhihao
  */
 @Getter
+@Slf4j
 public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware implements  Ordered,
         MergedBeanDefinitionPostProcessor,
-        InstantiationAwareBeanPostProcessor, BeanFactoryPostProcessor {
+        InstantiationAwareBeanPostProcessor, BeanFactoryPostProcessor, DisposableBean, AutowiredBeanProcessor {
 
     private final List<Class<? extends Annotation>> annotationTypes = new ArrayList<>();
 
     private final ConcurrentMap<String,AnnotatedInjectionMetadata> injectionMetadataCache = new ConcurrentHashMap<>(32);
 
-
-
     protected BaseAutowiredBeanPostProcessor() {
-        this.annotationTypes.addAll(processAnnotation());
+        this.annotationTypes.addAll(filterAnnotation());
     }
-
-    protected abstract List<Class<? extends Annotation>> processAnnotation();
 
     @Override
     public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-        if (isNotProcess(beanType)){
-            return;
-        }
         AnnotatedInjectionMetadata injectionMetadata = findInjectionMetadata(beanName, beanType, null);
         injectionMetadata.checkConfigMembers(beanDefinition);
-
-//        prepareInjection(injectionMetadata);
+        try {
+            beforeInjection(injectionMetadata);
+        } catch (Exception e) {
+            log.error("Prepare injection of @"+getAnnotationType().getSimpleName()+" failed", e);
+        }
     }
 
     @Override
@@ -70,35 +66,11 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
 
     }
 
-
-    // 判断某个并是否需要执行注入
-    private boolean isNotProcess(Class<?> beanType){
-        List<Field> fieldList = new ArrayList<>();
-        ReflectionUtils.doWithFields(beanType,field -> {
-            for (Class<? extends Annotation> annotationType : annotationTypes) {
-                if (field.isAnnotationPresent(annotationType)){
-                    fieldList.add(field);
-                }else {
-                    Annotation annotation = AnnotatedElementUtils.findMergedAnnotation(field, annotationType);
-                    if (annotation != null){
-                        fieldList.add(field);
-                    }
-                }
-            }
-        });
-        return fieldList.isEmpty();
-    }
-
     @Override
     public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) throws BeansException {
-        // todo
-        if (isNotProcess(bean.getClass())){
-            return pvs;
-        }
-
         AnnotatedInjectionMetadata metadata = findInjectionMetadata(beanName, bean.getClass(), pvs);
         try {
-//            prepareInjection(metadata);
+            beforeInjection(metadata);
             metadata.inject(bean, beanName, pvs);
         }
         catch (BeanCreationException ex) {
@@ -122,9 +94,7 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
                     }
                     try {
                         metadata = buildAnnotatedMetadata(clazz);
-                        if (metadata != null){
-                            this.injectionMetadataCache.put(cacheKey, metadata);
-                        }
+                        this.injectionMetadataCache.put(cacheKey, metadata);
                     } catch (NoClassDefFoundError err) {
                         throw new IllegalStateException("Failed to introspect object class [" + clazz.getName() +
                                 "] for annotation metadata: could not find class that it depends on", err);
@@ -136,10 +106,7 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
     }
 
     private AnnotatedInjectionMetadata buildAnnotatedMetadata(Class<?> beanClass) {
-        // find field
         Collection<AnnotatedFieldElement> elements = findFieldAnnotationMetadata(beanClass);
-        // find method
-
         return  new AnnotatedInjectionMetadata(beanClass,elements);
     }
 
@@ -148,13 +115,14 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
         List<AnnotatedFieldElement> elements = new ArrayList<>();
         ReflectionUtils.doWithFields(beanClass,(field -> {
             for (Class<? extends Annotation> annotationType : annotationTypes) {
-                AnnotationMeta annotationMeta = AnnotationUtils.getAnnotationMetaBy(field, annotationType, getEnvironment(), false, true);
+                AnnotationMeta annotationMeta = AnnotationPlusUtils.getAnnotationMetaBy(field, annotationType, getEnvironment(), false, true);
                 if (annotationMeta != null) {
-//                    if (Modifier.isStatic(field.getModifiers())){
-//
-//                    }
-
-                    //Annotation annotation = AnnotationUtils.tryGetMergedAnnotation(field, annotationType);
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        if (log.isWarnEnabled()) {
+                            log.warn("@" + annotationType.getName() + " is not supported on static fields: " + field);
+                        }
+                        return;
+                    }
                     elements.add(new AnnotatedFieldElement(field, annotationMeta));
                 }
             }
@@ -171,6 +139,7 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
         return Ordered.LOWEST_PRECEDENCE - 2;
     }
 
+
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         String[] beanNames = beanFactory.getBeanDefinitionNames();
@@ -180,13 +149,10 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
                 continue;
             }
 
-            // todo
-            if (isNotProcess(beanType)){
-                continue;
-            }
-
             AnnotatedInjectionMetadata injectionMetadata = findInjectionMetadata(beanName, beanType, null);
-            beforeInjection(injectionMetadata);
+            if (injectionMetadata != null){
+                beforeInjection(injectionMetadata);
+            }
         }
     }
 
@@ -254,7 +220,7 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
             invocation.setInjectedType(injectedType);
             invocation.setInjectedMember(member);
 
-            Object injectedObject = doGetInjectedBean(invocation);
+            Object injectedObject = getInjectedBean(invocation);
             if (member instanceof Field) {
                 Field field = (Field) member;
                 ReflectionUtils.makeAccessible(field);
@@ -291,8 +257,6 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
         }
     }
 
-    protected abstract  Object doGetInjectedBean(AutowiredInvocation invocation) throws Exception;
-
     public class AnnotatedFieldElement extends AnnotatedInjectElement {
 
         protected final Field field;
@@ -307,4 +271,12 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
         }
     }
 
+    public final Class<? extends Annotation> getAnnotationType() {
+        return annotationTypes.get(0);
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        injectionMetadataCache.clear();
+    }
 }

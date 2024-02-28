@@ -10,9 +10,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ProxySPI {
 
-    /**
-     * 获取代理的Bean工厂
-     */
+
     Class<? extends AnnotationProxyFactory<?>> value();
 
 

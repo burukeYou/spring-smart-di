@@ -2,15 +2,25 @@ package com.burukeyou.smartdi.register;
 
 import com.burukeyou.smartdi.support.AutowiredInvocation;
 
-public interface AutowiredBeanProcessor  {
+import java.lang.annotation.Annotation;
+import java.util.List;
+
+/**
+ * @author  caizhihao
+ */
+public interface AutowiredBeanProcessor {
 
     /**
-        注册bean定义
+     * Specify the injection annotations that need to be intercepted
+     * @return      the custom autowired annotations
      */
-    void registerBeanDefinition(AutowiredInvocation invocation);
+    List<Class<? extends Annotation>> filterAnnotation();
 
     /**
-     *  获取bean
+     * How to obtain the beans that need to be injected
+     * @param invocation        Context information when injected
+     * @return
+     * @throws Exception
      */
-    Object getCustomBean(AutowiredInvocation invocation) throws Exception;
+    Object getInjectedBean(AutowiredInvocation invocation);
 }
