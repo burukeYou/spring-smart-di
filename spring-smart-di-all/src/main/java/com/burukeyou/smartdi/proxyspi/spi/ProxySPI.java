@@ -1,4 +1,4 @@
-package com.burukeyou.smartdi.proxyspi.annotation;
+package com.burukeyou.smartdi.proxyspi.spi;
 
 
 import com.burukeyou.smartdi.proxyspi.factory.AnnotationProxyFactory;

@@ -1,6 +1,6 @@
 package com.burukeyou.smartdi.proxyspi;
 
-import com.burukeyou.smartdi.proxyspi.annotation.AutowiredProxySPI;
+import com.burukeyou.smartdi.proxyspi.spi.AutowiredProxySPI;
 import com.burukeyou.smartdi.register.BaseAutowiredBeanProcessor;
 import com.burukeyou.smartdi.support.AnnotationMeta;
 import com.burukeyou.smartdi.support.AutowiredInvocation;

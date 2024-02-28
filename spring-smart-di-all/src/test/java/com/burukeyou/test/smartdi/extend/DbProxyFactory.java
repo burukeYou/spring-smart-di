@@ -17,7 +17,7 @@ public class DbProxyFactory implements AnnotationProxyFactory<DBProxySPI> {
         String value = environment.resolvePlaceholders(spi.value());
         Object bean = null;
         try {
-            bean = SpringBeanContext.getBeanByAliasName(value);
+            bean = SpringBeanContext.getBeanAliasName(value);
         } catch (Exception e) {
             throw new RuntimeException("can not find yml spiBean for value " + value,e);
         }

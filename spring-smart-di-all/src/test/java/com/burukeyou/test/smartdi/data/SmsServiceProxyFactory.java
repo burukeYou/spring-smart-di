@@ -1,6 +1,6 @@
 package com.burukeyou.test.smartdi.data;
 
-import com.burukeyou.smartdi.proxyspi.annotation.ProxySPI;
+import com.burukeyou.smartdi.proxyspi.spi.ProxySPI;
 import com.burukeyou.smartdi.proxyspi.factory.AnnotationProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

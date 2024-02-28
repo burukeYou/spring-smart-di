@@ -2,7 +2,7 @@ package com.burukeyou.smartdi.proxyspi;
 
 import com.burukeyou.smartdi.config.SpringBeanContext;
 import com.burukeyou.smartdi.exceptions.SPIBeanTypeMismatchException;
-import com.burukeyou.smartdi.proxyspi.annotation.ProxySPI;
+import com.burukeyou.smartdi.proxyspi.spi.ProxySPI;
 import com.burukeyou.smartdi.proxyspi.factory.AnnotationProxyFactory;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 

@@ -49,7 +49,7 @@ public class SmartAutowiredBeanProcessor extends BaseAutowiredBeanProcessor {
                 throw new RuntimeException(e);
             }
         }
-        return getBeanByAliasName(beanName);
+        return getBeanAliasName(beanName);
     }
 
     private Object autowireGetBean(Class<?> injectedType, SmartAutowired smartAutowired) {

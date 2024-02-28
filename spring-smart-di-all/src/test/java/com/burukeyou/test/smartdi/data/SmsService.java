@@ -1,6 +1,6 @@
 package com.burukeyou.test.smartdi.data;
 
-import com.burukeyou.smartdi.proxyspi.annotation.ProxySPI;
+import com.burukeyou.smartdi.proxyspi.spi.ProxySPI;
 
 
 @ProxySPI(SmsServiceProxyFactory.class)

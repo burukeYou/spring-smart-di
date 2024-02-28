@@ -1,7 +1,7 @@
 package com.burukeyou.test.smartdi.extend;
 
 
-import com.burukeyou.smartdi.proxyspi.annotation.ProxySPI;
+import com.burukeyou.smartdi.proxyspi.spi.ProxySPI;
 
 import java.lang.annotation.*;
 

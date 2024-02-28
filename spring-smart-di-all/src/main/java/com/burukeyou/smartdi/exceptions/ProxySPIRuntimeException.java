@@ -2,6 +2,9 @@ package com.burukeyou.smartdi.exceptions;
 
 public class ProxySPIRuntimeException extends RuntimeException {
 
+    private static final long serialVersionUID = 6508488585962440779L;
+
+
     public ProxySPIRuntimeException() {
     }
 

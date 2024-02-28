@@ -1,7 +1,7 @@
 package com.burukeyou.smartdi.proxyspi;
 
 import com.burukeyou.smartdi.exceptions.AutowiredInjectBeanException;
-import com.burukeyou.smartdi.proxyspi.annotation.AutowiredSPI;
+import com.burukeyou.smartdi.proxyspi.spi.AutowiredSPI;
 import com.burukeyou.smartdi.register.BaseAutowiredBeanProcessor;
 import com.burukeyou.smartdi.support.AutowiredInvocation;
 import org.springframework.stereotype.Component;

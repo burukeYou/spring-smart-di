@@ -1,7 +1,7 @@
 package com.burukeyou.test.smartdi;
 
-import com.burukeyou.smartdi.proxyspi.annotation.AutowiredProxySPI;
-import com.burukeyou.smartdi.proxyspi.annotation.AutowiredSPI;
+import com.burukeyou.smartdi.proxyspi.spi.AutowiredProxySPI;
+import com.burukeyou.smartdi.proxyspi.spi.AutowiredSPI;
 import com.burukeyou.smartdi.smart.SmartAutowired;
 import com.burukeyou.test.smartdi.data.DBSmsService;
 import com.burukeyou.test.smartdi.data.EnvironmentSmsService;

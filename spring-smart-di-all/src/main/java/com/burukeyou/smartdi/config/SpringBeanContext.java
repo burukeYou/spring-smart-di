@@ -9,6 +9,9 @@ import org.springframework.util.StringUtils;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author  caizhihao
+ */
 public abstract class SpringBeanContext implements ApplicationContextAware {
 
 
@@ -31,7 +34,12 @@ public abstract class SpringBeanContext implements ApplicationContextAware {
         }
     }
 
-    public static <T> T getBeanByAliasName(String name){
+    /**
+     * @param name      the bean name or alias name
+     * @return
+     * @param <T>
+     */
+    public static <T> T getBeanAliasName(String name){
         try {
             return (T) springContext.getBean(name);
         } catch (NoSuchBeanDefinitionException e) {
