@@ -114,7 +114,7 @@
         <configuration>
           <publishingServerId>${sno.serviceId}</publishingServerId>
           <tokenAuth>true</tokenAuth>
-          <deploymentName>fast-retry-all</deploymentName>
+          <deploymentName>${name}</deploymentName>
         </configuration>
       </plugin>
 
