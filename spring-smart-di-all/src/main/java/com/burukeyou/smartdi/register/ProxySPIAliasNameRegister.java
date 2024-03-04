@@ -8,6 +8,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class ProxySPIAliasNameRegister implements BeanDefinitionRegistryPostProcessor {
@@ -18,6 +19,9 @@ public class ProxySPIAliasNameRegister implements BeanDefinitionRegistryPostProc
         for (String beanDefinitionName : beanDefinitionNames) {
             BeanDefinition beanDefinition = registry.getBeanDefinition(beanDefinitionName);
             String beanClassName = beanDefinition.getBeanClassName();
+            if (StringUtils.isEmpty(beanClassName)){
+                continue;
+            }
             try {
                 Class<?> beanClass = Class.forName(beanClassName);
                 BeanAliasName proxySPIName = beanClass.getAnnotation(BeanAliasName.class);
