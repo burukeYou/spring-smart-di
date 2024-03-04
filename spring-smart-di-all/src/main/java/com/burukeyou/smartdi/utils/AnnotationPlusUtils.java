@@ -17,7 +17,6 @@ import static org.springframework.core.annotation.AnnotationAttributes.fromMap;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.springframework.core.annotation.AnnotationUtils.getDefaultValue;
 import static org.springframework.util.ClassUtils.resolveClassName;
-import static org.springframework.util.CollectionUtils.arrayToList;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 import static org.springframework.util.ReflectionUtils.findMethod;
@@ -204,7 +203,7 @@ public abstract class AnnotationPlusUtils {
     public static Map<String, Object> getAttributes(Map<String, Object> annotationAttributes,
                                                     PropertyResolver propertyResolver, String... ignoreAttributeNames) {
 
-        Set<String> ignoreAttributeNamesSet = new HashSet<String>(arrayToList(ignoreAttributeNames));
+        Set<String> ignoreAttributeNamesSet = new HashSet<>(Arrays.asList(ignoreAttributeNames));
 
         Map<String, Object> actualAttributes = new LinkedHashMap<String, Object>();
 

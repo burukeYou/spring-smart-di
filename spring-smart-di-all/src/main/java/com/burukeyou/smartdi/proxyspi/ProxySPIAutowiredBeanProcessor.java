@@ -39,7 +39,10 @@ public class ProxySPIAutowiredBeanProcessor extends BaseAutowiredBeanProcessor {
             Class<?> injectedType = fieldElement.getField().getType();
             AnnotationMeta annotationMeta = fieldElement.getAnnotationMeta();
             RootBeanDefinition beanDefinition = getRootBeanDefinition(injectedType, annotationMeta);
-            beanDefinitionRegistry.registerBeanDefinition(getBeanName(injectedType),beanDefinition);
+            String beanName = getBeanName(injectedType);
+            if (!beanDefinitionRegistry.containsBeanDefinition(beanName)){
+                beanDefinitionRegistry.registerBeanDefinition(beanName,beanDefinition);
+            }
         }
     }
 
@@ -56,7 +59,7 @@ public class ProxySPIAutowiredBeanProcessor extends BaseAutowiredBeanProcessor {
     }
 
     public String getBeanName(Class<?> injectedType){
-        return Introspector.decapitalize(injectedType.getSimpleName());
+        return "SPI$$" + Introspector.decapitalize(injectedType.getSimpleName());
     }
 
 }
