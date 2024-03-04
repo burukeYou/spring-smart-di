@@ -7,7 +7,7 @@ import com.burukeyou.smartdi.config.SpringBeanContext;
 import java.lang.annotation.*;
 
 /**
- *    specified bean alias name , then can  obtained through {@link SpringBeanContext}
+ *    specified bean alias name , then can  obtain through {@link SpringBeanContext}
  */
 @Inherited
 @Target({ElementType.TYPE})

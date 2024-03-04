@@ -20,7 +20,7 @@ public class EnvironmentProxyFactory implements AnnotationProxyFactory<Environme
         String value = environment.resolvePlaceholders(spi.value());
         Object bean = null;
         try {
-            bean = SpringBeanContext.getBeanAliasName(value);
+            bean = SpringBeanContext.getBeanByAllName(value);
         } catch (Exception e) {
             throw new RuntimeException("can not find yml spiBean for value " + value,e);
         }

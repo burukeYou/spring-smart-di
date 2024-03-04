@@ -5,7 +5,6 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.ClassUtils;
-import sun.reflect.annotation.AnnotationParser;
 
 import java.lang.annotation.*;
 import java.lang.reflect.AnnotatedElement;
@@ -429,23 +428,6 @@ public abstract class AnnotationPlusUtils {
         return attributes == null ? null : new AnnotationMeta(annotation, attributes);
     }
 
-    public static AnnotationMeta getAnnotationMetaBy(AnnotatedElement annotatedElement,
-                                                               Class<? extends Annotation> annotationType,
-                                                               PropertyResolver propertyResolver,
-                                                               boolean ignoreDefaultValue,
-                                                               boolean tryMergedAnnotation,
-                                                               String... ignoreAttributeNames) {
-        AnnotationAttributes attributes = getAnnotationAttributes(annotatedElement, annotationType, propertyResolver, ignoreDefaultValue, tryMergedAnnotation, ignoreAttributeNames);
-        if (attributes == null){
-            return null;
-        }
-
-        Annotation annotation = convert2AnnotationObject(annotationType, attributes);
-        return new AnnotationMeta(annotation, attributes);
-    }
-
-
-
     /**
      * Try to get the merged {@link Annotation annotation}
      *
@@ -492,14 +474,4 @@ public abstract class AnnotationPlusUtils {
         Annotation annotation = tryGetMergedAnnotation(annotatedElement, annotationType);
         return annotation == null ? null : getAnnotationAttributes(annotation, propertyResolver, ignoreDefaultValue, ignoreAttributeNames);
     }
-
-
-    public static <T extends Annotation> T convert2AnnotationObject(Class<T> annotationType,AnnotationAttributes attributes){
-        return (T)convert2Annotation(annotationType, attributes);
-    }
-
-    public static <T extends Annotation> Annotation convert2Annotation(Class<T> annotationType,Map<String, Object> attributes) {
-        return AnnotationParser.annotationForMap(annotationType, attributes);
-    }
-
 }

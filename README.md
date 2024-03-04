@@ -1,15 +1,26 @@
 # spring-smart-di
 Spring 动态依赖注入扩展， 不再局限于简单的@Autowired
 
-新扩展注入注解：
+扩展注入注解如下
 - @SmartAutowired
 - @AutowiredProxySPI
 - @AutowiredSPI
 
 
 # 2、快速开始
+引入依赖
+```xml
+    <dependency>
+       <groupId>com.burukeyou</groupId>
+        <artifactId>spring-smart-di-all</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+```
 
-## 2.1 @SmartAutowired注解
+在spring配置类上标记 @EnableSmartDI 注解
+
+
+## 2.1 @SmartAutowired注解使用
 
 
 ### 2.1.1 默认的注入逻辑

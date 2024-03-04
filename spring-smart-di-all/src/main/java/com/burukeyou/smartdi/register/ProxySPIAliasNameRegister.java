@@ -22,7 +22,7 @@ public class ProxySPIAliasNameRegister implements BeanDefinitionRegistryPostProc
                 Class<?> beanClass = Class.forName(beanClassName);
                 BeanAliasName proxySPIName = beanClass.getAnnotation(BeanAliasName.class);
                 if (proxySPIName != null){
-                    SpringBeanContext.registerBeanAlias(proxySPIName.value(),beanDefinitionName);
+                    SpringBeanContext.registerBeanAlias(beanDefinitionName,proxySPIName.value());
                 }
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("can not find class for beanDefinitionName " + beanDefinitionName,e);

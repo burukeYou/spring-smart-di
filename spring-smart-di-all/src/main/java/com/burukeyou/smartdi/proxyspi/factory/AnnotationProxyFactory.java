@@ -10,8 +10,8 @@ import java.lang.annotation.Annotation;
 public interface AnnotationProxyFactory<T extends Annotation> {
 
     /**
-     * @param targetClass       获取的代理类型
-     * @param spi
+     * @param targetClass        Object type obtained
+     * @param spi                spi anno
      * @return
      */
     Object getProxy(Class<?> targetClass, T spi);

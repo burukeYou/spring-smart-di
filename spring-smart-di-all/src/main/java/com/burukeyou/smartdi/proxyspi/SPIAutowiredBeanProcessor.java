@@ -18,7 +18,7 @@ import java.util.List;
 public class SPIAutowiredBeanProcessor extends BaseAutowiredBeanProcessor {
 
     @Override
-    public List<Class<? extends Annotation>> filterAnnotation() {
+    public List<Class<? extends Annotation>> interceptAnnotation() {
         return Collections.singletonList(AutowiredSPI.class);
     }
 

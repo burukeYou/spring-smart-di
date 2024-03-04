@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class SmartAutowiredBeanProcessor extends BaseAutowiredBeanProcessor {
 
     @Override
-    public List<Class<? extends Annotation>> filterAnnotation() {
+    public List<Class<? extends Annotation>> interceptAnnotation() {
         return Collections.singletonList(SmartAutowired.class);
     }
 
@@ -49,7 +49,7 @@ public class SmartAutowiredBeanProcessor extends BaseAutowiredBeanProcessor {
                 throw new RuntimeException(e);
             }
         }
-        return getBeanAliasName(beanName);
+        return getBeanByAllName(beanName);
     }
 
     private Object autowireGetBean(Class<?> injectedType, SmartAutowired smartAutowired) {

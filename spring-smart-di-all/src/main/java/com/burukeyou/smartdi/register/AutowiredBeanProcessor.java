@@ -14,13 +14,12 @@ public interface AutowiredBeanProcessor {
      * Specify the injection annotations that need to be intercepted
      * @return      the custom autowired annotations
      */
-    List<Class<? extends Annotation>> filterAnnotation();
+    List<Class<? extends Annotation>> interceptAnnotation();
 
     /**
      * How to obtain the beans that need to be injected
      * @param invocation        Context information when injected
-     * @return
-     * @throws Exception
+     * @return       get inject bean
      */
     Object getInjectedBean(AutowiredInvocation invocation);
 }

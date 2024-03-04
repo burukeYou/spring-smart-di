@@ -23,7 +23,7 @@ import java.util.List;
 public class ProxySPIAutowiredBeanProcessor extends BaseAutowiredBeanProcessor {
 
     @Override
-    public List<Class<? extends Annotation>> filterAnnotation() {
+    public List<Class<? extends Annotation>> interceptAnnotation() {
         return Collections.singletonList(AutowiredProxySPI.class);
     }
 

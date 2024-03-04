@@ -43,7 +43,7 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
     private final ConcurrentMap<String,AnnotatedInjectionMetadata> injectionMetadataCache = new ConcurrentHashMap<>(32);
 
     protected BaseAutowiredBeanPostProcessor() {
-        this.annotationTypes.addAll(filterAnnotation());
+        this.annotationTypes.addAll(interceptAnnotation());
     }
 
     @Override
@@ -115,7 +115,7 @@ public abstract class BaseAutowiredBeanPostProcessor extends BaseSpringAware imp
         List<AnnotatedFieldElement> elements = new ArrayList<>();
         ReflectionUtils.doWithFields(beanClass,(field -> {
             for (Class<? extends Annotation> annotationType : annotationTypes) {
-                AnnotationMeta annotationMeta = AnnotationPlusUtils.getAnnotationMetaBy(field, annotationType, getEnvironment(), false, true);
+                AnnotationMeta annotationMeta = AnnotationPlusUtils.getAnnotationMeta(field, annotationType, getEnvironment(), false, true);
                 if (annotationMeta != null) {
                     if (Modifier.isStatic(field.getModifiers())) {
                         if (log.isWarnEnabled()) {
